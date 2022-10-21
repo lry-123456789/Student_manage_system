@@ -525,6 +525,23 @@ class Operation(QMainWindow):
         if temp not in list_str:
             return
         stu_gender = temp
+        # 避免错误，在数据库中审查唯一标识符是否被占用
+        conn = sqlite3.connect(database('stu_info'))
+        cursor = conn.cursor()
+        try:
+            sql = "SELECT * FROM INFO WHERE stu_id = '%s'"%(str(stu_id))
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            conn.commit()
+            if result != []:
+                QMessageBox.critical(self,"学号<唯一标识符>被占用","学号<唯一标识符>被占用",QMessageBox.Yes)
+                return
+        except sqlite3.OperationalError as E:
+            print(E)
+            return
+        finally:
+            cursor.close()
+            conn.close()
         # 此时数据获取完成
         conn = sqlite3.connect(database('stu_info'))
         cursor = conn.cursor()
@@ -765,3 +782,4 @@ def start():
 
 if __name__ == '__main__':
     start()
+ 
