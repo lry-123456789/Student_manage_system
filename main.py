@@ -773,6 +773,27 @@ class Operation(QMainWindow):
             self.label.setText(time_str + "\tconnect to database")
         else:
             self.label.setText(time_str + "\tfailed connect to database")
+            QMessageBox.critical(self,"严重错误","请勿在运行时删除数据库文件(RuntimeError:database disconnected <info.db>\nPress Yes to create database again)",QMessageBox.Yes)
+            self.Qt_UI_protect()
+        try:
+            conn = sqlite3.connect(database("stu_info"))
+            cursor = conn.cursor()
+            sql = "select * from INFO"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            # print(result)
+            # print(result[0][0])
+            cursor.close()
+            conn.close()
+        except Exception as e:
+            print(e)
+            result = []
+        # print(len(result))
+        self.tableWidget.setRowCount(len(result))
+        for i in range(len(result)):
+            for j in range(4):
+                # print(type(result[i][j]))
+                self.tableWidget.setItem(i, j, QTableWidgetItem(result[i][j]))
 
     def Qt_UI_protect(self):
         conn = sqlite3.connect(database("stu_info"))
