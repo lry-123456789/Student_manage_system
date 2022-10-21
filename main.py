@@ -7,8 +7,9 @@ import sys
 from PyQt5.QtCore import QCoreApplication, QPropertyAnimation, QPoint
 from win32api import GetSystemMetrics
 from PyQt5 import *
-from PyQt5.QtWidgets import  *
+from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+
 indexwindows = 0
 
 
@@ -18,14 +19,17 @@ def database(type: str):
     if type == 'stu_info':
         return "info.db"
 
+
 Login_ui = 0
 Register_ui = 0
 main_ui = 0
+
 
 class show_license(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
@@ -112,7 +116,7 @@ class show_license(QMainWindow):
                                             "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">7.其他条款</p>\n"
                                             "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
                                             "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">7.1 如果本协议中的任何条款无论因何种原因完全或部分无效或不具有执行力，或违反任何适用的法律，则该条款被视为删除，但本协议的其余条款仍应有效并且有约束力。</p>\n"
-                                            "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">7.2 LRY有权随时根据有关法律、法规的变化以及公司经营状况和经营策略的调整等修改本协议。修改后的协议会在github网站https://github.com/lry-123456789/Oral-cancer-diagnosis-system-using-Raman-spectroscopy上公布，并随附于新版本软件。当发生有关争议时，以最新的协议文本为准。如果不同意改动的内容，用户可以自行删除本软件。如果用户继续使用本软件，则视为您接受本协议的变动。</p>\n"
+                                            "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">7.2 LRY有权随时根据有关法律、法规的变化以及公司经营状况和经营策略的调整等修改本协议。修改后的协议会在github网站https://github.com/lry-123456789/Student_manage_system上公布，并随附于新版本软件。当发生有关争议时，以最新的协议文本为准。如果不同意改动的内容，用户可以自行删除本软件。如果用户继续使用本软件，则视为您接受本协议的变动。</p>\n"
                                             "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">7.3 LRY在法律允许最大范围内对本协议拥有解释权与修改权。</p>\n"
                                             "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
                                             "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">8.如果您确定使用本软件，则自动视为同意本软件的所有条款。</p></body></html>"))
@@ -152,6 +156,7 @@ class login(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 236)
@@ -188,11 +193,11 @@ class login(QMainWindow):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-        #self.pushButton_2.pyqtConfigure(objectName='pushButton_2',clicked=self.goto_new_window)
+        # self.pushButton_2.pyqtConfigure(objectName='pushButton_2',clicked=self.goto_new_window)
         self.pushButton.clicked.connect(self.goto_new_window)
         self.pushButton_3.clicked.connect(self.goto_exit)
         self.pushButton_2.clicked.connect(self.goto_register_window)
-        
+
         print("11")
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -210,8 +215,8 @@ class login(QMainWindow):
         if os.path.exists("known.ini"):
             print("not first use")
         else:
-            f = open("known.ini","a+")
-            print("[status]\nlogin.ini created\n[end]",file=f)
+            f = open("known.ini", "a+")
+            print("[status]\nlogin.ini created\n[end]", file=f)
         conn = sqlite3.connect(database('login'))
         cursor = conn.cursor()
         try:
@@ -223,14 +228,14 @@ class login(QMainWindow):
             print(E)
         cursor.close()
         conn.close()
-        #此处表头创建完成<避免在无数据库文件时报错>
-        #登录验证操作
+        # 此处表头创建完成<避免在无数据库文件时报错>
+        # 登录验证操作
         conn = sqlite3.connect(database('login'))
         cursor = conn.cursor()
-        #获取用户名和密码
+        # 获取用户名和密码
         account = self.lineEdit.text()
         password = self.lineEdit_2.text()
-        sql = "SELECT * from LOGIN WHERE ACCOUNT = '%s' AND PASSWORD = '%s'"%(account,password)
+        sql = "SELECT * from LOGIN WHERE ACCOUNT = '%s' AND PASSWORD = '%s'" % (account, password)
         print(cursor.execute(sql))
         result = cursor.fetchall()
         conn.commit()
@@ -238,14 +243,12 @@ class login(QMainWindow):
         cursor.close()
         conn.close()
         if result == []:
-            QMessageBox.warning(self,'密码错误','密码错误',QMessageBox.Yes)
-        else :
-            #此处可以连接下一个登录界面
+            QMessageBox.warning(self, '密码错误', '密码错误', QMessageBox.Yes)
+        else:
+            # 此处可以连接下一个登录界面
             global main_ui
             main_ui.show()
             self.close()
-
-
 
     def goto_register_window(self):
         try:
@@ -256,7 +259,7 @@ class login(QMainWindow):
             # index_ui.setupUi(indexwindows0)
             # indexwindows0.show()
             # self.MainWindow.close()
-            #--------------------------#
+            # --------------------------#
             # app0 = QApplication(sys.argv)
             # mainwindow = QMainWindow()
             # output = login()
@@ -279,6 +282,7 @@ class Register(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 218)
@@ -326,22 +330,23 @@ class Register(QMainWindow):
         self.label_2.setText(_translate("MainWindow", "Password:"))
         self.label_3.setText(_translate("MainWindow", "Confirm password:"))
         self.pushButton.setText(_translate("MainWindow", "Create Account"))
+
     def pull_info_to_database(self):
-        #连接数据库
+        # 连接数据库
         user_account = self.lineEdit.text()
         user_password = self.lineEdit_2.text()
         confirm_password = self.lineEdit_3.text()
         if user_account == '':
-            a = QMessageBox.warning(self,'用户名不能为空','用户名不能为空',QMessageBox.Yes)
+            a = QMessageBox.warning(self, '用户名不能为空', '用户名不能为空', QMessageBox.Yes)
             return
         if user_password == '':
-            a = QMessageBox.warning(self,'密码不能为空','密码不能为空',QMessageBox.Yes)
+            a = QMessageBox.warning(self, '密码不能为空', '密码不能为空', QMessageBox.Yes)
             return
         if user_password == user_account:
-            a = QMessageBox.warning(self,'用户名不能与密码相同','用户名不能与密码相同',QMessageBox.Yes)
+            a = QMessageBox.warning(self, '用户名不能与密码相同', '用户名不能与密码相同', QMessageBox.Yes)
             return
         if user_password != confirm_password:
-            a = QMessageBox.warning(self,'两次密码不一致，请重新输入','两次密码不一致，请重新输入',QMessageBox.Yes)
+            a = QMessageBox.warning(self, '两次密码不一致，请重新输入', '两次密码不一致，请重新输入', QMessageBox.Yes)
             return
         # 检查通过，连接数据库
         conn = sqlite3.connect(database('login'))
@@ -358,24 +363,25 @@ class Register(QMainWindow):
         conn = sqlite3.connect(database('login'))
         cursor = conn.cursor()
         try:
-            sql = "insert into LOGIN values('%s', '%s')"%(user_account,user_password)
+            sql = "insert into LOGIN values('%s', '%s')" % (user_account, user_password)
             print(cursor.execute(sql))
             result = cursor.fetchall()
             conn.commit()
             print(result)
             cursor.close()
             conn.close()
-            QMessageBox.information(self,'注册完成','注册完成')
+            QMessageBox.information(self, '注册完成', '注册完成')
             Login_ui.show()
             self.close()
         except:
-            QMessageBox.warning(self,'提示','用户名已存在')
+            QMessageBox.warning(self, '提示', '用户名已存在')
 
 
 class Operation(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
@@ -414,13 +420,13 @@ class Operation(QMainWindow):
         self.tableWidget.setGeometry(QtCore.QRect(10, 20, 761, 461))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(4)
-        self.tableWidget.setColumnWidth(0,180)
-        self.tableWidget.setColumnWidth(1,180)
-        self.tableWidget.setColumnWidth(2,180)
-        self.tableWidget.setColumnWidth(3,180)
-        self.tableWidget.setHorizontalHeaderLabels(('学号','姓名','年龄','性别'))
-        self.tableWidget.setRowCount(0) #列
-        #在此处显示所有信息
+        self.tableWidget.setColumnWidth(0, 180)
+        self.tableWidget.setColumnWidth(1, 180)
+        self.tableWidget.setColumnWidth(2, 180)
+        self.tableWidget.setColumnWidth(3, 180)
+        self.tableWidget.setHorizontalHeaderLabels(('学号', '姓名', '年龄', '性别'))
+        self.tableWidget.setRowCount(0)  # 列
+        # 在此处显示所有信息
         try:
             conn = sqlite3.connect(database("stu_info"))
             cursor = conn.cursor()
@@ -480,33 +486,33 @@ class Operation(QMainWindow):
         stu_name = 0
         stu_age = 0
         stu_gender = 0
-        temp,is_OK = QInputDialog.getInt(self,"请输入学号",'请输入学号',min = 0)
+        temp, is_OK = QInputDialog.getInt(self, "请输入学号", '请输入学号', min=0)
         # print(temp,is_OK)            0,True
         if is_OK == False:
             return
         stu_id = temp
-        temp,is_OK = QInputDialog.getText(self,'请输入学生姓名','请输入学生姓名')
+        temp, is_OK = QInputDialog.getText(self, '请输入学生姓名', '请输入学生姓名')
         # print(temp,is_OK)           None ,False
         if is_OK == False:
             return
         stu_name = temp
-        temp,is_Ok = QInputDialog.getInt(self,'请输入年龄','请输入年龄',min=1,max=100)
+        temp, is_Ok = QInputDialog.getInt(self, '请输入年龄', '请输入年龄', min=1, max=100)
         # print(temp,is_Ok)             0,True
         if is_OK == False:
             return
         stu_age = temp
-        list_str = ('男','女')
-        temp,is_OK = QInputDialog.getItem(self,'请输入性别','请输入性别',list_str)
+        list_str = ('男', '女')
+        temp, is_OK = QInputDialog.getItem(self, '请输入性别', '请输入性别', list_str)
         if is_OK == False:
             return
         if temp not in list_str:
             return
         stu_gender = temp
-        #此时数据获取完成
+        # 此时数据获取完成
         conn = sqlite3.connect(database('stu_info'))
         cursor = conn.cursor()
         try:
-            sql = "insert into INFO values('%s','%s','%s','%s')"%(str(stu_id),stu_name,str(stu_age),stu_gender)
+            sql = "insert into INFO values('%s','%s','%s','%s')" % (str(stu_id), stu_name, str(stu_age), stu_gender)
             cursor.execute(sql)
             result = cursor.fetchall()
             conn.commit()
@@ -514,7 +520,7 @@ class Operation(QMainWindow):
             print(E)
         cursor.close()
         conn.close()
-        #在主界面上显示
+        # 在主界面上显示
         try:
             conn = sqlite3.connect(database("stu_info"))
             cursor = conn.cursor()
@@ -533,18 +539,18 @@ class Operation(QMainWindow):
         for i in range(len(result)):
             for j in range(4):
                 print(type(result[i][j]))
-                self.tableWidget.setItem(i,j,QTableWidgetItem(result[i][j]))
+                self.tableWidget.setItem(i, j, QTableWidgetItem(result[i][j]))
 
     def del_stu_info(self):
-        #此处删除某个学生的信息
-        stu_id,is_OK = QInputDialog.getInt(self,"请输入待删除的学生学号","请输入待删除的学生学号",min = 0)
-        if is_OK ==False:
+        # 此处删除某个学生的信息
+        stu_id, is_OK = QInputDialog.getInt(self, "请输入待删除的学生学号", "请输入待删除的学生学号", min=0)
+        if is_OK == False:
             return
         try:
             conn = sqlite3.connect(database("stu_info"))
             cursor = conn.cursor()
             print(stu_id)
-            sql = "delete from INFO where stu_id = '%s'"%(str(stu_id))
+            sql = "delete from INFO where stu_id = '%s'" % (str(stu_id))
             cursor.execute(sql)
             conn.commit()
             cursor.close()
@@ -572,30 +578,30 @@ class Operation(QMainWindow):
                 self.tableWidget.setItem(i, j, QTableWidgetItem(result[i][j]))
 
     def change_stu_info(self):
-        #此处为修改某个学生的信息
-        temp,is_OK = QInputDialog.getInt(self,"请输入待修改的学生ID",'请输入待修改的学生ID',min=0)
+        # 此处为修改某个学生的信息
+        temp, is_OK = QInputDialog.getInt(self, "请输入待修改的学生ID", '请输入待修改的学生ID', min=0)
         if is_OK == False:
             return
         stu_id_before = temp
-        list_str = ('id','姓名','年龄','性别')
-        change,is_OK = QInputDialog.getItem(self,'请选择待修改的信息项目','请选择待修改的项目',list_str)
+        list_str = ('id', '姓名', '年龄', '性别')
+        change, is_OK = QInputDialog.getItem(self, '请选择待修改的信息项目', '请选择待修改的项目', list_str)
         if is_OK == False:
             return
         if change not in list_str:
             return
         if change == 'id':
-            temp , is_OK = QInputDialog.getInt(self,"请输入修改后的ID","请输入修改后的ID",min=0)
+            temp, is_OK = QInputDialog.getInt(self, "请输入修改后的ID", "请输入修改后的ID", min=0)
             if is_OK == False:
                 return
             conn = sqlite3.connect(database("stu_info"))
             cursor = conn.cursor()
-            sql = "UPDATE INFO SET stu_id = '%s' WHERE stu_id = '%s'"%(temp,stu_id_before)
+            sql = "UPDATE INFO SET stu_id = '%s' WHERE stu_id = '%s'" % (temp, stu_id_before)
             cursor.execute(sql)
-            QMessageBox.information(self,"修改完成",'修改完成',QMessageBox.Yes)
+            QMessageBox.information(self, "修改完成", '修改完成', QMessageBox.Yes)
             conn.commit()
             cursor.close()
             conn.close()
-            #主界面组件更新
+            # 主界面组件更新
             try:
                 conn = sqlite3.connect(database("stu_info"))
                 cursor = conn.cursor()
@@ -617,12 +623,12 @@ class Operation(QMainWindow):
                     self.tableWidget.setItem(i, j, QTableWidgetItem(result[i][j]))
             return
         if change == '姓名':
-            temp,is_OK = QInputDialog.getText(self,"请输入修改后的姓名","请输入修改后的姓名")
+            temp, is_OK = QInputDialog.getText(self, "请输入修改后的姓名", "请输入修改后的姓名")
             if is_OK == False:
                 return
             conn = sqlite3.connect(database("stu_info"))
             cursor = conn.cursor()
-            sql = "UPDATE INFO SET name = '%s' WHERE stu_id = '%s'"%(temp,stu_id_before)
+            sql = "UPDATE INFO SET name = '%s' WHERE stu_id = '%s'" % (temp, stu_id_before)
             cursor.execute(sql)
             QMessageBox.information(self, "修改完成", '修改完成', QMessageBox.Yes)
             conn.commit()
@@ -650,12 +656,12 @@ class Operation(QMainWindow):
                     self.tableWidget.setItem(i, j, QTableWidgetItem(result[i][j]))
             return
         if change == '年龄':
-            temp,is_OK = QInputDialog.getInt(self,"请输入修改后的年龄","请输入修改后的年龄",min=0,max=100)
-            if is_OK ==False:
+            temp, is_OK = QInputDialog.getInt(self, "请输入修改后的年龄", "请输入修改后的年龄", min=0, max=100)
+            if is_OK == False:
                 return
             conn = sqlite3.connect(database("stu_info"))
             cursor = conn.cursor()
-            sql = "UPDATE INFO SET age = '%s' WHERE stu_id = '%s'"%(temp,stu_id_before)
+            sql = "UPDATE INFO SET age = '%s' WHERE stu_id = '%s'" % (temp, stu_id_before)
             cursor.execute(sql)
             QMessageBox.information(self, "修改完成", '修改完成', QMessageBox.Yes)
             conn.commit()
@@ -683,15 +689,15 @@ class Operation(QMainWindow):
                     self.tableWidget.setItem(i, j, QTableWidgetItem(result[i][j]))
             return
         if change == '性别':
-            list_gender = ('男','女')
-            temp,is_OK = QInputDialog.getItem(self,"请输入修改后的性别","请输入修改后的性别",list_gender)
+            list_gender = ('男', '女')
+            temp, is_OK = QInputDialog.getItem(self, "请输入修改后的性别", "请输入修改后的性别", list_gender)
             if is_OK == False:
                 return
             if temp not in list_gender:
                 return
             conn = sqlite3.connect(database("stu_info"))
             cursor = conn.cursor()
-            sql = "UPDATE INFO SET gender ='%s' WHERE stu_id = '%s'"%(temp,stu_id_before)
+            sql = "UPDATE INFO SET gender ='%s' WHERE stu_id = '%s'" % (temp, stu_id_before)
             cursor.execute(sql)
             QMessageBox.information(self, "修改完成", '修改完成', QMessageBox.Yes)
             conn.commit()
@@ -718,12 +724,13 @@ class Operation(QMainWindow):
                     print(type(result[i][j]))
                     self.tableWidget.setItem(i, j, QTableWidgetItem(result[i][j]))
             return
-        QMessageBox.critical(self,"RuntimeError","StackOverFlow",QMessageBox.Yes)
+        QMessageBox.critical(self, "RuntimeError", "StackOverFlow", QMessageBox.Yes)
         exit(-1)
+
 
 def start():
     app = QApplication(sys.argv)
-    global Login_ui,Register_ui,main_ui
+    global Login_ui, Register_ui, main_ui
     Login_ui = login()
     Register_ui = Register()
     License_ui = show_license()
