@@ -12,6 +12,16 @@ from PyQt5.QtCore import *
 
 indexwindows = 0
 
+__author__name__ ='lry'
+__author__email__ = '76830986+lry-123456789@user.noreply.github.com'
+__maintainer__name__='lry'
+__maintainer__email__='1224137702@qq.com'
+__version__ = 'v1.0.0'
+
+def copyright():
+    """
+this file is edited by lry (c) 2020~2022    
+"""
 
 def database(type: str):
     if type == 'login':
@@ -160,6 +170,8 @@ class login(QMainWindow):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 236)
+        MainWindow.setMinimumSize(QtCore.QSize(800, 236))
+        MainWindow.setMaximumSize(QtCore.QSize(800, 236))
         self.MainWindow = MainWindow
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -217,6 +229,7 @@ class login(QMainWindow):
         else:
             f = open("known.ini", "a+")
             print("[status]\nlogin.ini created\n[end]", file=f)
+            f.close()
         conn = sqlite3.connect(database('login'))
         cursor = conn.cursor()
         try:
@@ -286,6 +299,8 @@ class Register(QMainWindow):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 218)
+        MainWindow.setMinimumSize(QtCore.QSize(800, 218))
+        MainWindow.setMaximumSize(QtCore.QSize(800, 218))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.label = QtWidgets.QLabel(self.centralwidget)
@@ -385,6 +400,8 @@ class Operation(QMainWindow):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
+        MainWindow.setMinimumSize(QtCore.QSize(800, 600))
+        MainWindow.setMaximumSize(QtCore.QSize(800, 600))
         conn = sqlite3.connect(database("stu_info"))
         cursor = conn.cursor()
         try:
@@ -469,7 +486,7 @@ class Operation(QMainWindow):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "学生信息管理系统"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "学生信息管理系统 v1.0.0 powered by lry (c) 2020~2022"))
         self.pushButton.setText(_translate("MainWindow", "添加学生信息"))
         self.pushButton_2.setText(_translate("MainWindow", "删除学生信息"))
         self.pushButton_3.setText(_translate("MainWindow", "修改学生信息"))
