@@ -1,27 +1,27 @@
 import os.path
-from tkinter import dialog
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import sqlite3
 import sys
-from PyQt5.QtCore import QCoreApplication, QPropertyAnimation, QPoint
-from win32api import GetSystemMetrics
 from PyQt5 import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+import time
 
 indexwindows = 0
 
-__author__name__ ='lry'
+__author__name__ = 'lry'
 __author__email__ = '76830986+lry-123456789@user.noreply.github.com'
-__maintainer__name__='lry'
-__maintainer__email__='1224137702@qq.com'
+__maintainer__name__ = 'lry'
+__maintainer__email__ = '1224137702@qq.com'
 __version__ = 'v1.0.0'
+
 
 def copyright():
     """
 this file is edited by lry (c) 2020~2022    
 """
+
 
 def database(type: str):
     if type == 'login':
@@ -210,7 +210,7 @@ class login(QMainWindow):
         self.pushButton_3.clicked.connect(self.goto_exit)
         self.pushButton_2.clicked.connect(self.goto_register_window)
 
-        print("11")
+        # print("11")
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -252,7 +252,7 @@ class login(QMainWindow):
         print(cursor.execute(sql))
         result = cursor.fetchall()
         conn.commit()
-        print(result)
+        # print(result)
         cursor.close()
         conn.close()
         if result == []:
@@ -382,7 +382,7 @@ class Register(QMainWindow):
             print(cursor.execute(sql))
             result = cursor.fetchall()
             conn.commit()
-            print(result)
+            # print(result)
             cursor.close()
             conn.close()
             QMessageBox.information(self, '注册完成', '注册完成')
@@ -410,7 +410,7 @@ class Operation(QMainWindow):
             conn.commit()
             id = cursor.fetchall()
         except sqlite3.OperationalError as E:
-            print(E)
+            # print(E)
             sql = "create table INFO(stu_id primary key not null, name text not null, age text not null, gender text not null)"
             cursor.execute(sql)
             conn.commit()
@@ -450,10 +450,10 @@ class Operation(QMainWindow):
             sql = "select * from INFO"
             cursor.execute(sql)
             result = cursor.fetchall()
-            print(result)
+            # print(result)
         except:
             result = []
-            print("0")
+            # print("0")
         finally:
             cursor.close()
             conn.close()
@@ -461,7 +461,7 @@ class Operation(QMainWindow):
         # self.tableWidget.setRowCount(len(result))
         for i in range(len(result)):
             for j in range(4):
-                print(type(result[i][j]))
+                # print(type(result[i][j]))
                 self.tableWidget.setItem(i, j, QTableWidgetItem(result[i][j]))
         self.tableWidget.viewport().update()
         self.groupBox_2 = QtWidgets.QGroupBox(self.centralwidget)
@@ -481,6 +481,9 @@ class Operation(QMainWindow):
         self.pushButton.clicked.connect(self.insert_stu_info)
         self.pushButton_2.clicked.connect(self.del_stu_info)
         self.pushButton_3.clicked.connect(self.change_stu_info)
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.protect_thread)
+        self.timer.start(100)
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -499,6 +502,7 @@ class Operation(QMainWindow):
             self.label.setText("can not connect to the database")
 
     def insert_stu_info(self):
+        self.Qt_UI_protect()
         stu_id = 0
         stu_name = 0
         stu_age = 0
@@ -529,15 +533,15 @@ class Operation(QMainWindow):
         conn = sqlite3.connect(database('stu_info'))
         cursor = conn.cursor()
         try:
-            sql = "SELECT * FROM INFO WHERE stu_id = '%s'"%(str(stu_id))
+            sql = "SELECT * FROM INFO WHERE stu_id = '%s'" % (str(stu_id))
             cursor.execute(sql)
             result = cursor.fetchall()
             conn.commit()
             if result != []:
-                QMessageBox.critical(self,"学号<唯一标识符>被占用","学号<唯一标识符>被占用",QMessageBox.Yes)
+                QMessageBox.critical(self, "学号<唯一标识符>被占用", "学号<唯一标识符>被占用", QMessageBox.Yes)
                 return
         except sqlite3.OperationalError as E:
-            print(E)
+            # print(E)
             return
         finally:
             cursor.close()
@@ -568,14 +572,15 @@ class Operation(QMainWindow):
         finally:
             cursor.close()
             conn.close()
-        print(len(result))
+        # print(len(result))
         self.tableWidget.setRowCount(len(result))
         for i in range(len(result)):
             for j in range(4):
-                print(type(result[i][j]))
+                # print(type(result[i][j]))
                 self.tableWidget.setItem(i, j, QTableWidgetItem(result[i][j]))
 
     def del_stu_info(self):
+        self.Qt_UI_protect()
         # 此处删除某个学生的信息
         stu_id, is_OK = QInputDialog.getInt(self, "请输入待删除的学生学号", "请输入待删除的学生学号", min=0)
         if is_OK == False:
@@ -583,7 +588,7 @@ class Operation(QMainWindow):
         try:
             conn = sqlite3.connect(database("stu_info"))
             cursor = conn.cursor()
-            print(stu_id)
+            # print(stu_id)
             sql = "delete from INFO where stu_id = '%s'" % (str(stu_id))
             cursor.execute(sql)
             conn.commit()
@@ -597,21 +602,22 @@ class Operation(QMainWindow):
             sql = "select * from INFO"
             cursor.execute(sql)
             result = cursor.fetchall()
-            print(result)
-            print(result[0][0])
+            # print(result)
+            # print(result[0][0])
         except:
             print("0")
         finally:
             cursor.close()
             conn.close()
-        print(len(result))
+        # print(len(result))
         self.tableWidget.setRowCount(len(result))
         for i in range(len(result)):
             for j in range(4):
-                print(type(result[i][j]))
+                # print(type(result[i][j]))
                 self.tableWidget.setItem(i, j, QTableWidgetItem(result[i][j]))
 
     def change_stu_info(self):
+        self.Qt_UI_protect()
         # 此处为修改某个学生的信息
         temp, is_OK = QInputDialog.getInt(self, "请输入待修改的学生ID", '请输入待修改的学生ID', min=0)
         if is_OK == False:
@@ -642,18 +648,18 @@ class Operation(QMainWindow):
                 sql = "select * from INFO"
                 cursor.execute(sql)
                 result = cursor.fetchall()
-                print(result)
-                print(result[0][0])
+                # print(result)
+                # print(result[0][0])
             except:
                 print("0")
             finally:
                 cursor.close()
                 conn.close()
-            print(len(result))
+            # print(len(result))
             self.tableWidget.setRowCount(len(result))
             for i in range(len(result)):
                 for j in range(4):
-                    print(type(result[i][j]))
+                    # print(type(result[i][j]))
                     self.tableWidget.setItem(i, j, QTableWidgetItem(result[i][j]))
             return
         if change == '姓名':
@@ -675,18 +681,18 @@ class Operation(QMainWindow):
                 sql = "select * from INFO"
                 cursor.execute(sql)
                 result = cursor.fetchall()
-                print(result)
-                print(result[0][0])
+                # print(result)
+                # print(result[0][0])
             except:
                 print("0")
             finally:
                 cursor.close()
                 conn.close()
-            print(len(result))
+            # print(len(result))
             self.tableWidget.setRowCount(len(result))
             for i in range(len(result)):
                 for j in range(4):
-                    print(type(result[i][j]))
+                    # print(type(result[i][j]))
                     self.tableWidget.setItem(i, j, QTableWidgetItem(result[i][j]))
             return
         if change == '年龄':
@@ -708,14 +714,14 @@ class Operation(QMainWindow):
                 sql = "select * from INFO"
                 cursor.execute(sql)
                 result = cursor.fetchall()
-                print(result)
-                print(result[0][0])
+                # print(result)
+                # print(result[0][0])
             except:
                 print("0")
             finally:
                 cursor.close()
                 conn.close()
-            print(len(result))
+            # print(len(result))
             self.tableWidget.setRowCount(len(result))
             for i in range(len(result)):
                 for j in range(4):
@@ -744,31 +750,66 @@ class Operation(QMainWindow):
                 sql = "select * from INFO"
                 cursor.execute(sql)
                 result = cursor.fetchall()
-                print(result)
-                print(result[0][0])
+                # print(result)
+                # print(result[0][0])
             except:
                 print("0")
             finally:
                 cursor.close()
                 conn.close()
-            print(len(result))
+            # print(len(result))
             self.tableWidget.setRowCount(len(result))
             for i in range(len(result)):
                 for j in range(4):
-                    print(type(result[i][j]))
+                    # print(type(result[i][j]))
                     self.tableWidget.setItem(i, j, QTableWidgetItem(result[i][j]))
             return
         QMessageBox.critical(self, "RuntimeError", "StackOverFlow", QMessageBox.Yes)
         exit(-1)
 
+    def protect_thread(self):
+        time_str = time.asctime(time.localtime(time.time()))
+        if os.path.exists(database("stu_info")):
+            self.label.setText(time_str + "\tconnect to database")
+        else:
+            self.label.setText(time_str + "\tfailed connect to database")
+
+    def Qt_UI_protect(self):
+        conn = sqlite3.connect(database("stu_info"))
+        cursor = conn.cursor()
+        try:
+            sql = "select count(*) from INFO"
+            cursor.execute(sql)
+            conn.commit()
+            id = cursor.fetchall()
+        except sqlite3.OperationalError as E:
+            # print(E)
+            sql = "create table INFO(stu_id primary key not null, name text not null, age text not null, gender text not null)"
+            cursor.execute(sql)
+            conn.commit()
+            id = 0
+        finally:
+            cursor.close()
+            conn.close()
+
+
+def check_system():
+    print('sys info:', sys.platform)
+    if sys.platform == 'linux':
+        print('this program run on Linux platform may have some errors')
+
 
 def start():
+    print('checking system info please wait...')
+    check_system()
+    print('Load UI subsystem,please wait')
     app = QApplication(sys.argv)
     global Login_ui, Register_ui, main_ui
     Login_ui = login()
     Register_ui = Register()
     License_ui = show_license()
     main_ui = Operation()
+    print('check UI information,please wait')
     if os.path.exists("known.ini"):
         Login_ui.show()
     else:
@@ -782,4 +823,3 @@ def start():
 
 if __name__ == '__main__':
     start()
- 
