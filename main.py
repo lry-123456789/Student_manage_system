@@ -565,8 +565,8 @@ class Operation(QMainWindow):
             sql = "select * from INFO"
             cursor.execute(sql)
             result = cursor.fetchall()
-            print(result)
-            print(result[0][0])
+            #print(result)
+            #print(result[0][0])
         except:
             print("0")
         finally:
@@ -725,7 +725,7 @@ class Operation(QMainWindow):
             self.tableWidget.setRowCount(len(result))
             for i in range(len(result)):
                 for j in range(4):
-                    print(type(result[i][j]))
+                    #print(type(result[i][j]))
                     self.tableWidget.setItem(i, j, QTableWidgetItem(result[i][j]))
             return
         if change == '性别':
@@ -770,7 +770,7 @@ class Operation(QMainWindow):
     def protect_thread(self):
         time_str = time.asctime(time.localtime(time.time()))
         if os.path.exists(database("stu_info")):
-            self.label.setText(time_str + "\tconnect to database")
+            self.label.setText(time_str + "\tconnected to database")
         else:
             self.label.setText(time_str + "\tfailed connect to database")
             QMessageBox.critical(self,"严重错误","请勿在运行时删除数据库文件(RuntimeError:database disconnected <info.db>\nPress Yes to create database again)",QMessageBox.Yes)
