@@ -1,12 +1,32 @@
-import os.path
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow
+import os.path, os
 import sqlite3
 import sys
-from PyQt5 import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
 import time
+from shutil import copyfile
+
+try:
+    from PyQt5 import QtCore, QtGui, QtWidgets
+    from PyQt5.QtWidgets import QApplication, QMainWindow
+    from PyQt5 import *
+    from PyQt5.QtWidgets import *
+    from PyQt5.QtCore import *
+except:
+    print('we can not found moudle pyqt5 or this moudle run failed , reinstall ?(Y/N)')
+    a = input()
+    if a == 'Y' or 'y':
+        os.system("python -m pip install pyqt5 --upgrade --user")
+        """create the environment"""
+        try:
+            from PyQt5 import QtCore, QtGui, QtWidgets
+            from PyQt5.QtWidgets import QApplication, QMainWindow
+            from PyQt5 import *
+            from PyQt5.QtWidgets import *
+            from PyQt5.QtCore import *
+        except:
+            print("can not install moudle pyqt5,so this program can not start.")
+    else:
+        print('can not start the moudle,exit the program...\nplease wait')
+        exit(-1)
 
 indexwindows = 0
 
@@ -19,7 +39,7 @@ __version__ = 'v1.0.0'
 
 def copyright():
     """
-this file is edited by lry (c) 2020~2022    
+this file is edited by lry (c) 2020~2022
 """
 
 
@@ -419,17 +439,22 @@ class Operation(QMainWindow):
             cursor.close()
             conn.close()
         self.lines = id
+        self.filename = 0
+        f = open(database("stu_info"), "rb")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(10, 10, 121, 41))
+        self.pushButton.setGeometry(QtCore.QRect(10, 10, 90, 41))
         self.pushButton.setObjectName("pushButton")
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(150, 10, 121, 41))
+        self.pushButton_2.setGeometry(QtCore.QRect(105, 10, 90, 41))
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_3.setGeometry(QtCore.QRect(290, 10, 121, 41))
+        self.pushButton_3.setGeometry(QtCore.QRect(200, 10, 90, 41))
         self.pushButton_3.setObjectName("pushButton_3")
+        self.pushButton_4 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_4.setGeometry(QtCore.QRect(295, 10, 110, 41))
+        self.pushButton_4.setObjectName("pushButton_4")
         self.groupBox = QtWidgets.QGroupBox(self.centralwidget)
         self.groupBox.setGeometry(QtCore.QRect(10, 60, 781, 491))
         self.groupBox.setObjectName("groupBox")
@@ -481,9 +506,13 @@ class Operation(QMainWindow):
         self.pushButton.clicked.connect(self.insert_stu_info)
         self.pushButton_2.clicked.connect(self.del_stu_info)
         self.pushButton_3.clicked.connect(self.change_stu_info)
+        self.pushButton_4.clicked.connect(self.insert_or_export)
         self.timer = QTimer()
         self.timer.timeout.connect(self.protect_thread)
         self.timer.start(100)
+        # self.timer0 = QTimer()
+        # self.timer0.timeout.connect(self.runtime_protect_Database)
+        # self.timer0.start(10)
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -493,6 +522,7 @@ class Operation(QMainWindow):
         self.pushButton.setText(_translate("MainWindow", "添加学生信息"))
         self.pushButton_2.setText(_translate("MainWindow", "删除学生信息"))
         self.pushButton_3.setText(_translate("MainWindow", "修改学生信息"))
+        self.pushButton_4.setText(_translate("MainWindow", "导入/导出"))
         self.groupBox.setTitle(_translate("MainWindow", "所有学生信息"))
         self.groupBox_2.setTitle(_translate("MainWindow", "status"))
         self.label.setText(_translate("MainWindow", "can not attach to the database, please check the connection"))
@@ -565,8 +595,8 @@ class Operation(QMainWindow):
             sql = "select * from INFO"
             cursor.execute(sql)
             result = cursor.fetchall()
-            #print(result)
-            #print(result[0][0])
+            # print(result)
+            # print(result[0][0])
         except:
             print("0")
         finally:
@@ -725,7 +755,7 @@ class Operation(QMainWindow):
             self.tableWidget.setRowCount(len(result))
             for i in range(len(result)):
                 for j in range(4):
-                    #print(type(result[i][j]))
+                    # print(type(result[i][j]))
                     self.tableWidget.setItem(i, j, QTableWidgetItem(result[i][j]))
             return
         if change == '性别':
@@ -773,7 +803,9 @@ class Operation(QMainWindow):
             self.label.setText(time_str + "\tconnected to database")
         else:
             self.label.setText(time_str + "\tfailed connect to database")
-            QMessageBox.critical(self,"严重错误","请勿在运行时删除数据库文件(RuntimeError:database disconnected <info.db>\nPress Yes to create database again)",QMessageBox.Yes)
+            QMessageBox.critical(self, "严重错误",
+                                 "请勿在运行时删除数据库文件(RuntimeError:database disconnected <info.db>\nPress Yes to create database again)",
+                                 QMessageBox.Yes)
             self.Qt_UI_protect()
         try:
             conn = sqlite3.connect(database("stu_info"))
@@ -813,11 +845,249 @@ class Operation(QMainWindow):
             cursor.close()
             conn.close()
 
+    def insert_or_export(self):
+        list_choose = ('导入', '导出')
+        temp, is_OK = QInputDialog.getItem(self, "请选择类别", "请选择类别", list_choose)
+        if is_OK == False:
+            return
+        if temp not in list_choose:
+            return
+        if temp == '导入':
+            try:
+                self.insert_into_database()
+            except Exception as e:
+                QMessageBox.critical(self,"严重错误",e)
+        if temp == '导出':
+            QMessageBox.information(self,"系统暂不支持此操作","系统暂不支持此操作，请期待后续版本")
+
+    def insert_into_database(self):
+        # filename, filetype = QtWidgets.QFileDialog.getOpenFileName(self, "请选择文件", os.getcwd(),
+        #                                                            "TXT(*.txt);;XLSX(*.xlsx);;XLS(*.xls);;CSV(*.csv)")
+        filename, filetype = QtWidgets.QFileDialog.getOpenFileName(self, "请选择文件", os.getcwd(),
+                                                                   "XLSX(*.xlsx);;XLS(*.xls)")
+        print(filename)
+        print(filetype)
+        # filetype  :   txt             xlsx            xls             csv
+        # type      :   TXT(*.txt)      XLSX(*xlsx)     XLS(*xls)       CSV(*csv)
+        type_list = ['TXT(*.txt)', 'XLSX(*.xlsx)', 'XLS(*.xls)', 'CSV(*.csv)']
+        if filetype == type_list[0]:
+            self.filename = filename
+            self.insert_from_txt()
+            return
+        if filetype == type_list[1]:
+            self.filename = filename
+            self.insert_from_xlsx()
+            return
+        if filetype == type_list[2]:
+            self.filename = filename
+            self.insert_from_xls()
+            return
+        if filetype == type_list[3]:
+            self.filename = filename
+            self.insert_from_csv()
+            return
+        return
+
+    def insert_from_txt(self):
+        QMessageBox.information(self,"暂不支持","暂不支持")
+
+    def insert_from_xlsx(self):
+        QMessageBox.information(self,"注意","本程序使用的是单线程，运行时可能会出现无响应情况，请等待即可")
+        time0 = time.time()
+        print("1")
+        try:
+            import xlrd3
+        except:
+            QMessageBox.critical(self, "严重错误",
+                                 "无法启动组件导出到xlsx\n可能是因为没有安装运行库xlrd3\n<run this command in your terminal: pip install xlrd3 --user>")
+            return
+        filename = self.filename
+        try:
+            workbook = xlrd3.open_workbook(filename)
+        except Exception as e:
+            QMessageBox.critical(self, "未知错误", e + "\n本组件无法继续执行")
+            return
+        names = workbook.sheet_names()
+        # print(names)
+        worksheet = workbook.sheet_by_name(names[0])
+        cols = worksheet.ncols
+        # print("cols = ", cols)
+        if cols < 4:
+            QMessageBox.critical(self, "严重错误", "AssertError:\n<assert cols >= 4>")
+            return
+        list_ok = [0, 0, 0, 0]
+        ok = False
+        for col in range(cols):
+            value = worksheet.cell_value(0, col)
+            if value == '学号':
+                ok = True
+                list_ok[0] = col
+                break
+        if ok == False:
+            QMessageBox.critical(self, "无法查找到学号信息", "无法查找到学号信息")
+            return
+        ok = False
+        for col in range(cols):
+            value = worksheet.cell_value(0, col)
+            if value == '姓名':
+                ok = True
+                list_ok[1] = col
+                break
+        if ok == False:
+            QMessageBox.critical(self, "无法查找姓名信息", "无法查找姓名信息")
+            return
+        ok = False
+        for col in range(cols):
+            value = worksheet.cell_value(0, col)
+            if value == '年龄':
+                ok = True
+                list_ok[2] = col
+                break
+        if ok == False:
+            QMessageBox.critical(self, "无法查找年龄信息", "无法查找年龄信息")
+            return
+        ok = False
+        for col in range(cols):
+            value = worksheet.cell_value(0, col)
+            if value == '性别':
+                ok = True
+                list_ok[3] = col
+                break
+        if ok == False:
+            QMessageBox.critical(self, "无法查找性别信息", "无法查找性别信息")
+            return
+        # xlrd read ended
+        # get rows
+        # print("1")
+        nrows = worksheet.nrows
+        lines = nrows - 1
+        # get some information
+        # commit this information to database
+        # print("1")
+        conn = sqlite3.connect(database("stu_info"))
+        cursor = conn.cursor()
+        # 如果没有表头，则创建表头
+        try:
+            sql = "create table INFO(stu_id primary key not null, name text not null, age text not null, gender text not null)"
+            cursor.execute(sql)
+            conn.commit()
+        except sqlite3.OperationalError as E:
+            print(E)
+        finally:
+            cursor.close()
+            conn.close()
+        # print("1")
+        # 表头已经创建：
+        # 可以插入数据：
+        name_list = []
+        age_list = []
+        stu_id_list = []
+        gender_list = []
+        for i in range(lines):
+            # stu_id, name, age, gender = worksheet.cell_value(i + 1, list_ok[0]), worksheet.cell_value(i + 1, list_ok[
+            #     1]), worksheet.cell_value(i + 1, list[2]), worksheet.cell_value(i + 1, list_ok[3])
+            # print(list_ok,lines,i)
+            output_str = "progress="+str(i)+"/"+str(lines)+"stage1/2"
+            self.label.setText(output_str)
+            stu_id = worksheet.cell_value(i+1,list_ok[0])
+            name = worksheet.cell_value(i+1,list_ok[1])
+            age = worksheet.cell_value(i+1,list_ok[2])
+            gender = worksheet.cell_value(i+1,list_ok[3])
+            # print(stu_id,name,age,gender)
+            if stu_id == '':
+                QMessageBox.critical(self,"严重错误","无法查找学号信息"+str(i+1)+"行")
+                return
+            if name == "":
+                QMessageBox.critical(self,"严重错误","无法查找姓名信息"+str(i+1)+"行")
+                return
+            if age == "":
+                QMessageBox.critical(self,"严重错误","无法找到年龄信息"+str(i+1)+"行")
+                return
+            if gender == "":
+                QMessageBox.critical(self,"严重错误","w货找到性别信息"+str(i+1)+"行")
+                return
+            list_gender = ['男','女']
+            if gender not in list_gender:
+                QMessageBox.critical(self,"严重错误","性别无法识别")
+            if type(stu_id) != int:
+                stu_id = int(stu_id)
+            if type(age) != int:
+                age = int(age)
+            if type(stu_id) != str:
+                stu_id = str(stu_id)
+            if type(name) != str:
+                name = str(name)
+            if type(age) != str:
+                age = str(age)
+            if type(gender) != str:
+                gender = str(gender)
+            stu_id_list.append(stu_id)
+            name_list.append(name)
+            age_list.append(age)
+            gender_list.append(gender)
+        conn = sqlite3.connect(database("stu_info"))
+        cursor = conn.cursor()
+        for i in range(len(name_list)):
+            try :
+                output_str = "progress="+str(i)+"/"+str(len(name_list))+"stage2/2"
+                self.label.setText(output_str)
+                sql = "insert into INFO values('%s','%s','%s','%s')"%(stu_id_list[i],name_list[i],age_list[i],gender_list[i])
+                # print(sql)
+                cursor.execute(sql)
+                # print("1")
+                conn.commit()
+                # print("1")
+            except sqlite3.OperationalError as e:
+                # print(e)
+                QMessageBox.warning(self,"警告","学号数据信息已被占用，无法写入信息")
+            except Exception as e:
+                # print(e)
+                QMessageBox.warning(self,"未知错误",str(e))
+                return
+        cursor.close()
+        conn.close()
+
+        # commit 完成
+        # 更新主界面
+        try:
+            conn = sqlite3.connect(database("stu_info"))
+            cursor = conn.cursor()
+            sql = "select * from INFO"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            # print(result)
+            # print(result[0][0])
+        except:
+            print("0")
+        finally:
+            cursor.close()
+            conn.close()
+        # print(len(result))
+        self.tableWidget.setRowCount(len(result))
+        for i in range(len(result)):
+            for j in range(4):
+                # print(type(result[i][j]))
+                self.tableWidget.setItem(i, j, QTableWidgetItem(result[i][j]))
+        time1 = time.time()
+        used = time1 - time0
+        cols = len(result)
+        output_str = "操作完成,一共成功完成"+str(cols)+"条数据\n用时"+str(used)+"s"
+        QMessageBox.information(self,"操作完成",output_str)
+
+    def insert_from_xls(self):
+        self.insert_from_xlsx()
+
+    def insert_from_csv(self):
+        QMessageBox.information(self,"暂时不支持","暂不支持")
+
+
 
 def check_system():
     print('sys info:', sys.platform)
     if sys.platform == 'linux':
         print('this program run on Linux platform may have some errors')
+    if sys.platform == 'win32':
+        print('detect windows platform')
 
 
 def start():
@@ -829,6 +1099,7 @@ def start():
     Login_ui = login()
     Register_ui = Register()
     License_ui = show_license()
+    print('Runtime protect<database> mode : open')
     main_ui = Operation()
     print('check UI information,please wait')
     if os.path.exists("known.ini"):
